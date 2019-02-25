@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace Commissions.Rest
 {
-    internal class RestService : IRestService
+    public class RestService : IRestService
     {
         private string _token;
 

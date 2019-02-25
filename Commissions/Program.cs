@@ -12,6 +12,7 @@ using Commissions.CryptoCortex.Subscriptions;
 using Commissions.Rest;
 using Commissions.Subscription;
 using Commissions.Subscriptions;
+using Commissions.Tests;
 using Newtonsoft.Json;
 
 namespace Commissions
@@ -31,6 +32,14 @@ namespace Commissions
 
         static void Main(string[] args)
         {
+            TermTickCommissions commissions = new TermTickCommissions();
+            commissions.Initialize("BTC", "USD");
+            Thread.Sleep(2000);
+            commissions.BuySource();
+            Console.ReadLine();
+            commissions.CloseConnections();
+            Console.ReadLine();
+            /*
             RestService configuratorRestService = new RestService(ConfiguratorUrl, "/token", ConfiguratorAuthorization);
             ConfiguratorRestService configuratorService = new ConfiguratorRestService(configuratorRestService);
             configuratorService.Authorize(ConfiguratorUserName, ConfiguratorUserPass);
@@ -85,6 +94,9 @@ namespace Commissions
             {
                 Console.WriteLine(ex.Message);
             }
+            */
+
+
         }
         public static void PrintOrder(string message)
         {
@@ -121,5 +133,7 @@ namespace Commissions
                 Console.WriteLine("Currency {0}: Type: {1} Quantity: {2}", transact.CurrencyId, transact.Type, transact.Amount);
             }
         }
+
+
     }
 }

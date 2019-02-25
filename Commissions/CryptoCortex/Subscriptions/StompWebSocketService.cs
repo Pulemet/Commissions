@@ -196,7 +196,6 @@ namespace Commissions.Subscription
             }
 
             string unsubscribeMessage = "UNSUBSCRIBE\r\nid:" + removedSubId + "\r\n\r\n\0";
-            Console.WriteLine(unsubscribeMessage);
             socket.Send(unsubscribeMessage);
 
             subIds.Remove(removedSubId);
