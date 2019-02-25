@@ -72,8 +72,8 @@
     <Compile Include="Rest\RestService.cs" />
     <Compile Include="CryptoCortex\Subscriptions\StompWebSocketService.cs" />
     <Compile Include="CryptoCortex\Subscriptions\TraderSubscription.cs" />
-    <Compile Include="Tests\BaseScenario.cs" />
-    <Compile Include="Tests\TermTickCommissions.cs" />
+    <Compile Include="Tests\TestEngine.cs" />
+    <Compile Include="Tests\TestsLibrary.cs" />
     <Compile Include="Constants.cs" />
   </ItemGroup>
   <ItemGroup>

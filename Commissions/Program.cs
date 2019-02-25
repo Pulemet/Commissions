@@ -32,13 +32,12 @@ namespace Commissions
 
         static void Main(string[] args)
         {
-            TermTickCommissions commissions = new TermTickCommissions();
+            TestsLibrary commissions = new TestsLibrary();
             commissions.Initialize("BTC", "USD");
             Thread.Sleep(2000);
             commissions.BuySource();
             Console.ReadLine();
             commissions.CloseConnections();
-            Console.ReadLine();
             /*
             RestService configuratorRestService = new RestService(ConfiguratorUrl, "/token", ConfiguratorAuthorization);
             ConfiguratorRestService configuratorService = new ConfiguratorRestService(configuratorRestService);

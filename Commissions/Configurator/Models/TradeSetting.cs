@@ -9,25 +9,13 @@ using Newtonsoft.Json.Serialization;
 
 namespace Commissions.Configurator.Models
 {
-    public enum BuyerCommissionMethod
+    public enum CommissionMethod
     {
         EXACT_VALUE = 1,
         TERM_TICKS,
         QUANTITY_PERCENT
     }
-    public enum BuyerCommissionAccount
-    {
-        SOURCE_ACCOUNT = 1,
-        DESTINATION_ACCOUNT
-    }
-    public enum SellerCommissionMethod
-    {
-        EXACT_VALUE = 1,
-        TERM_TICKS,
-        QUANTITY_PERCENT
-    }
-
-    public enum SellerCommissionAccount
+    public enum CommissionAccount
     {
         SOURCE_ACCOUNT = 1,
         DESTINATION_ACCOUNT
@@ -111,10 +99,10 @@ namespace Commissions.Configurator.Models
         public double? BuyerMakerCommissionProgressive { get; set; }
 
         [JsonProperty("buyerCommissionAccount")]
-        public BuyerCommissionAccount? BuyerCommissionAccount { get; set; }
+        public CommissionAccount? BuyerCommissionAccount { get; set; }
 
         [JsonProperty("buyerCommissionMethod")]
-        public BuyerCommissionMethod? BuyerCommissionMethod { get; set; }
+        public CommissionMethod? BuyerCommissionMethod { get; set; }
 
         [JsonProperty("sellerMakerCommissionFlat")]
         public double? SellerMakerCommissionFlat { get; set; }
@@ -123,10 +111,10 @@ namespace Commissions.Configurator.Models
         public double? SellerMakerCommissionProgressive { get; set; }
 
         [JsonProperty("sellerCommissionMethod")]
-        public SellerCommissionMethod? SellerCommissionMethod { get; set; }
+        public CommissionMethod? SellerCommissionMethod { get; set; }
 
         [JsonProperty("sellerCommissionAccount")]
-        public SellerCommissionMethod? SellerCommissionAccount { get; set; }
+        public CommissionAccount? SellerCommissionAccount { get; set; }
 
         [JsonProperty("takerReserveMultiplier")]
         public double? TakerReserveMultiplier { get; set; }

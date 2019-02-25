@@ -11,10 +11,11 @@ using Commissions.CryptoCortex.Subscriptions;
 using Commissions.Rest;
 using Commissions.Subscriptions;
 using Newtonsoft.Json;
+using Type = Commissions.CryptoCortex.Models.Type;
 
 namespace Commissions.Tests
 {
-    public class BaseScenario
+    public class TestEngine
     {
         public RestService ConfiguratorRest;
         public ConfiguratorRestService ConfiguratorService;
@@ -33,6 +34,7 @@ namespace Commissions.Tests
         public List<TransactionDto> BaseTransactions;
         public List<TransactionDto> TermTransactions;
         public bool IsOrderSent;
+        public UserDto User;
 
         public void Initialize(string baseSymbol, string termSymbol)
         {
@@ -44,9 +46,9 @@ namespace Commissions.Tests
             ConfiguratorRest = new RestService(Constants.ConfiguratorUrl, "/token", Constants.ConfiguratorAuthorization);
             ConfiguratorService = new ConfiguratorRestService(ConfiguratorRest);
             ConfiguratorService.Authorize(Constants.ConfiguratorUserName, Constants.ConfiguratorUserPass);
-            var user = ConfiguratorService.SearchUser(ConfiguratorUser)[0];
+            User = ConfiguratorService.SearchUser(ConfiguratorUser)[0];
             // Get Trading Settings
-            TradeSettings = ConfiguratorService.GeTradeSettings(user.UserId).FirstOrDefault(s => s.Settings.Symbol == Symbol);
+            TradeSettings = ConfiguratorService.GeTradeSettings(User.UserId).FirstOrDefault(s => s.Settings.Symbol == Symbol);
 
             // Crypto
             CryptoRest = new RestService(Constants.CryptoUrl, "/oauth/token", Constants.CryptoAuthorization);
@@ -127,6 +129,77 @@ namespace Commissions.Tests
             }
         }
 
+        protected double GetCoeffMethod(CommissionMethod method, CommissionAccount account)
+        {
+            switch (method)
+            {
+                case CommissionMethod.QUANTITY_PERCENT:
+                    return 0.01;
+                case CommissionMethod.TERM_TICKS:
+                    return 1;
+            }
+
+            return 1;
+        }
+
+        protected void CalcCommissions(List<TransactionDto> currencyForCommission, CommissionMethod method, CommissionAccount account, double pv)
+        {
+            string currency = currencyForCommission[0].CurrencyId;
+            int precision = currency == BaseSymbol ? 4 : 3;
+
+            double commissions =
+                currencyForCommission.FindAll(t => t.Type == Type.trading_commission).Sum(t => t.Amount);
+
+            double calcCommissions = method == CommissionMethod.EXACT_VALUE
+                    ? Math.Round(BaseTransactions.FindAll(t => t.Type == Type.profit_loss).Sum(t => t.Amount) * pv, precision)
+                    : Math.Round(currencyForCommission.FindAll(t => t.Type == Type.profit_loss).Sum(t => t.Amount) *
+                                   pv * GetCoeffMethod(method, account), precision);
+
+            calcCommissions = calcCommissions > 0 ? -calcCommissions : calcCommissions;
+
+            if (CompareDouble(commissions, calcCommissions))
+            {
+                Console.WriteLine("{0} Commissions: {1}, Calculate commissions: {2}", currency, commissions, calcCommissions);
+            }
+            else
+            {
+                Console.WriteLine("Error! {0} Commissions: {1}, Calculate commissions: {2}", currency, commissions, calcCommissions);
+            }
+        }
+
+        protected void CheckCommissions()
+        {
+            if (Order.Side == Side.BUY)
+            {
+                CommissionAccount account = (CommissionAccount)TradeSettings.Settings.BuyerCommissionAccount;
+                CommissionMethod method = (CommissionMethod)TradeSettings.Settings.BuyerCommissionMethod;
+
+                List<TransactionDto> currencyForCommission = account == CommissionAccount.SOURCE_ACCOUNT ?
+                    TermTransactions : BaseTransactions;
+
+                double pv = Order.Type == OrderType.MARKET
+                    ? (double)TradeSettings.Settings.BuyerTakerCommissionProgressive
+                    : (double)TradeSettings.Settings.BuyerMakerCommissionProgressive;
+
+                CalcCommissions(currencyForCommission, method, account, pv);
+            }
+
+            if (Order.Side == Side.SELL)
+            {
+                CommissionAccount account = (CommissionAccount)TradeSettings.Settings.SellerCommissionAccount;
+                CommissionMethod method = (CommissionMethod)TradeSettings.Settings.SellerCommissionMethod;
+
+                List<TransactionDto> currencyForCommission = account == CommissionAccount.SOURCE_ACCOUNT ?
+                    BaseTransactions : TermTransactions;
+
+                double pv = Order.Type == OrderType.MARKET
+                    ? (double)TradeSettings.Settings.SellerTakerCommissionProgressive
+                    : (double)TradeSettings.Settings.SellerMakerCommissionProgressive;
+
+                CalcCommissions(currencyForCommission, method, account, pv);
+            }
+        }
+
         public static bool CompareDouble(double first, double second)
         {
             return Math.Abs(first - second) < Constants.Delta;
@@ -140,6 +213,7 @@ namespace Commissions.Tests
             BaseTransactions = new List<TransactionDto>();
             TermTransactions = new List<TransactionDto>();
             IsOrderSent = false;
+            User = new UserDto();
         }
 
         public void CloseConnections()
