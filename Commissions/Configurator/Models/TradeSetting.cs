@@ -157,7 +157,7 @@ namespace Commissions.Configurator.Models
 
         [JsonProperty("modificationTime")]
         public string ModificationTime { get; set; }
-        //"0001-01-01T00:00:00"
+
         public static string GetStringTime(DateTime time)
         {
             return GetYear(time.Year) + "-" + GetTwoSymbolsForNumber(time.Month) + "-" +

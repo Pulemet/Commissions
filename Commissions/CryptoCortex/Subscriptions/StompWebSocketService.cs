@@ -59,7 +59,7 @@ namespace Commissions.Subscription
             if (action == null)
                 throw new ArgumentNullException(nameof(action));
 
-            string subscriptionId = "sub-" + subIdx.ToString();
+            string subscriptionId = "sub-" + subIdx;
             subIdx++;
 
             socket.Send(GetSubscribeMessage(subscriptionId, topic));
@@ -78,14 +78,14 @@ namespace Commissions.Subscription
             subIds.Add(subscriptionId);
         }
 
-        public void SendMessage<T>(string topic, T body, Action<string> action)
+        public void SendMessage<T>(string additionalHeaders, string topic, T body, Action<string> action)
         {
             if (action == null)
                 throw new ArgumentNullException(nameof(action));
 
             string correlationId = GetRandomString(10);
 
-            socket.Send(GetSendMessage(correlationId, topic, body));
+            socket.Send(GetSendMessage(additionalHeaders, correlationId, topic, body));
             fastSubscribers.Add(correlationId, action);
         }
 
@@ -125,15 +125,14 @@ namespace Commissions.Subscription
 
         public string GetSubscribeMessage(string subscriptionId, string topic)
 	    {
-            return $"SUBSCRIBE\r\nX-Deltix-Nonce:1550757750718\r\nid:{subscriptionId}\r\ndestination:{topic}\r\n\r\n\0";
+            return $"SUBSCRIBE\r\nX-Deltix-Nonce:{ConvertToUnixTimestamp(DateTime.Now)}\r\nid:{subscriptionId}\r\ndestination:{topic}\r\n\r\n\0";
         }
 
-        public string GetSendMessage<T>(string correlationId, string topic, T body)
+        public string GetSendMessage<T>(String additionalHeaders, string correlationId, string topic, T body)
         {
-            return String.Format("SEND\r\ncorrelation-id:{0}\r\nX-Deltix-Nonce:{2}\r\ndestination:{1}\r\n\r\n{3}\r\n\r\n\0",
-                correlationId, topic,
-                StompWebSocketService.ConvertToUnixTimestamp(DateTime.Now),
-                JsonConvert.SerializeObject(body));
+            return String.Format("SEND\r\n{0}correlation-id:{1}\r\nX-Deltix-Nonce:{2}\r\ndestination:{3}\r\n\r\n{4}\r\n\r\n\0",
+                additionalHeaders, correlationId, ConvertToUnixTimestamp(DateTime.Now),
+                topic, JsonConvert.SerializeObject(body));
         }
 
         public string GetConnectMessage(string token)
@@ -212,6 +211,7 @@ namespace Commissions.Subscription
 
         public void Close()
         {
+            socket.Send("DISCONNECT\r\n\r\n\0");
             socket.Close();
         }
     }

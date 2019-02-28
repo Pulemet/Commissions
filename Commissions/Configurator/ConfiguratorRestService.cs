@@ -35,7 +35,19 @@ namespace Commissions.Configurator
 
         public TradeSetting SaveTradeSetting(string id, TradeSetting setting)
         {
+            setting.ModificationTime = TradeSetting.GetStringTime(DateTime.UtcNow);
             return _restService.Put<TradeSetting, TradeSetting>("/api/users/" + id + "/securitytradingsettings/" + setting.SecurityId, setting);
+        }
+
+        public Security[] GetSecurities()
+        {
+            return _restService.Get<Security[]>("/api/securities");
+        }
+
+        public Security SaveSecurity(string id, Security security)
+        {
+            security.ModificationTime = TradeSetting.GetStringTime(DateTime.UtcNow);
+            return _restService.Put<Security, Security>("/api/securities/" + id, security);
         }
     }
 }

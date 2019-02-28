@@ -16,9 +16,9 @@ namespace Commissions
         public const string CryptoAuthorization = "Basic d2ViOg==";
         public const string ConfiguratorUserName = "OperatorUsername";
         public const string ConfiguratorUserPass = "OperatorPassword";
-        public const string CryptoUserName = "Ekaterina_runec@mail.ru";
+        public const string CryptoUserName = "katerina_runec@mail.ru";
         public const string CryptoUserPass = "12!@qwQW";
-        public const string Exchange = "SBITFINEX";
+        public const string CryptoTraderName = "erunets1994@bk.ru";
         public const double Delta = 1e-10;
     }
 }

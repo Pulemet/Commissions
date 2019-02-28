@@ -22,14 +22,22 @@ namespace Commissions.CryptoCortex.Subscriptions
             StompWebSocketService = new StompWebSocketService(_url, _token);
         }
 
-        public void ResponsesSubscribe(Action<string> action)
+        public void ResponsesSubscribe()
         {
-            StompWebSocketService.Subscribe(ResponsesDestination, action);
+            StompWebSocketService.Subscribe(ResponsesDestination, CheckWebSocketStatus);
         }
 
-        public void StopResponses(Action<string> action)
+        protected void CheckWebSocketStatus(string message)
         {
-            StompWebSocketService.Unsubscribe(ResponsesDestination, action);
+            if (message.Length > 3 && message.Substring(0, 3) != "200")
+            {
+                Console.WriteLine("Error! Status: {0}", message.Substring(0, 3));
+            }
+        }
+
+        public void StopResponses()
+        {
+            StompWebSocketService.Unsubscribe(ResponsesDestination, CheckWebSocketStatus);
         }
 
         public void Close()

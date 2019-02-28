@@ -16,9 +16,9 @@ namespace Commissions.CryptoCortex.Subscriptions
 
         }
 
-        public void CheckTransactions(Action<string> action, long startTime)
+        public void GetTransactions(Action<string> action, long startTime)
         {
-            StompWebSocketService.SendMessage(TransactionsDestination, new TransactionsStartTime() {StartTime = startTime}, action);
+            StompWebSocketService.SendMessage("", TransactionsDestination, new TransactionsStartTime() {StartTime = startTime}, action);
         }
     }
 }

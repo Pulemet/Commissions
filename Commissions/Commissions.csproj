@@ -42,8 +42,16 @@
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.4.5.11\lib\net45\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -56,12 +64,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configurator\ConfiguratorRestService.cs" />
+    <Compile Include="Configurator\Models\Security.cs" />
     <Compile Include="Configurator\Models\TradeSetting.cs" />
     <Compile Include="Configurator\Models\UserDto.cs" />
     <Compile Include="Configurator\Models\UserForSearch.cs" />
     <Compile Include="CryptoCortex\CryptoRestService.cs" />
     <Compile Include="CryptoCortex\Models\BalanceDto.cs" />
-    <Compile Include="CryptoCortex\Models\OrderCrypto.cs" />
+    <Compile Include="CryptoCortex\Models\L2Action.cs" />
+    <Compile Include="CryptoCortex\Models\L2PackageDto.cs" />
+    <Compile Include="CryptoCortex\Models\Orders\Event.cs" />
+    <Compile Include="CryptoCortex\Models\Orders\OrderCrypto.cs" />
+    <Compile Include="CryptoCortex\Models\Orders\Order.cs" />
+    <Compile Include="CryptoCortex\Models\Orders\OrderResponce.cs" />
     <Compile Include="CryptoCortex\Models\TransactionDto.cs" />
     <Compile Include="CryptoCortex\Models\TransactionsStartTime.cs" />
     <Compile Include="CryptoCortex\Subscriptions\ManagerSubscription.cs" />
@@ -72,12 +86,20 @@
     <Compile Include="Rest\RestService.cs" />
     <Compile Include="CryptoCortex\Subscriptions\StompWebSocketService.cs" />
     <Compile Include="CryptoCortex\Subscriptions\TraderSubscription.cs" />
+    <Compile Include="Tests\TestContent.cs" />
     <Compile Include="Tests\TestEngine.cs" />
     <Compile Include="Tests\TestsLibrary.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="Tests\TestTrader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <Content Include="NLog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="NLog.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />

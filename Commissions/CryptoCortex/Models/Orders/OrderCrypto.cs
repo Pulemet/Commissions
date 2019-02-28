@@ -7,18 +7,27 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 
-namespace Commissions.CryptoCortex.Models
+namespace Commissions.CryptoCortex.Models.Orders
 {
     public enum OrderType
     {
-        MARKET,
-        LIMIT
+        LIMIT,
+        MARKET
     }
 
     public enum Side
     {
         BUY,
         SELL
+    }
+
+    public enum TimeInForce
+    {
+        GTD,
+        DAY,
+        GTC,
+        FOK,
+        IOC
     }
 
     public class OrderCrypto
@@ -28,6 +37,11 @@ namespace Commissions.CryptoCortex.Models
             public EnumConverter() : base(new SnakeCaseNamingStrategy(), false)
             {
             }
+        }
+
+        public virtual object Clone()
+        {
+            return this.MemberwiseClone();
         }
 
         [JsonProperty("quantity")]
@@ -46,5 +60,15 @@ namespace Commissions.CryptoCortex.Models
 
         [JsonProperty("destination")]
         public string Destination { get; set; }
+
+        [JsonProperty("time_in_force")]
+        [JsonConverter(typeof(EnumConverter))]
+        public TimeInForce? TimeInForce { get; set; }
+
+        [JsonProperty("price")]
+        public double? Price { get; set; }
+
+        [JsonProperty("expire_time")]
+        public long? ExpireTime { get; set; }
     }
 }
