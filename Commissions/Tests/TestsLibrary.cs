@@ -130,18 +130,20 @@ namespace Commissions.Tests
 
         private double CalcAggressiveOrderPrice(Side side)
         {
-            return side == Side.BUY ? BestAsk * 1.01 : BestBid * 0.99;
+            return Math.Round(side == Side.BUY ? BestAsk * 1.02 : BestBid * 0.98);
         }
 
         private double CalcPassiveOrderPrice(Side side)
         {
+            return side == Side.BUY ? 150 : 130;
+            /*
             double coeff = 0.001;
-
             if (side == Side.BUY)
             {
-                return CompareDouble(BestAsk, 0) ? 2050 : BestAsk - coeff;
+                return CompareDouble(BestAsk, 0) ? 230 : BestAsk - coeff;
             }
-            return CompareDouble(BestBid, 0) ? 1950 : BestBid + coeff;
+            return CompareDouble(BestBid, 0) ? 190 : BestBid + coeff;
+            */
         }
 
         private void GeneralCheck(string testName, bool isPassive)
@@ -159,16 +161,17 @@ namespace Commissions.Tests
 
             WaitOrderStatus();
 
-            ManagerSubscriber.GetTransactions(SaveTransactions, sentOrderTime);
-            Thread.Sleep(1000);
-            if (TestContent.IsOrderSent)
+            if (TestContent.IsSuccess)
             {
+                ManagerSubscriber.GetTransactions(SaveTransactions, sentOrderTime);
+                Thread.Sleep(1000);
                 try
                 {
                     CheckCommissions(isPassive);
                 }
                 catch (Exception ex)
                 {
+                    TestContent.IsSuccess = false;
                     Console.WriteLine("While calculating commissions an error occured: {0}", ex.Message);
                     Console.WriteLine("Stack trace: {0}", ex.StackTrace);
                 }
@@ -179,11 +182,14 @@ namespace Commissions.Tests
                 }
                 catch (Exception ex)
                 {
+                    TestContent.IsSuccess = false;
                     Console.WriteLine("While checking balance an error occured: {0}", ex.Message);
                     Console.WriteLine("Stack trace: {0}", ex.StackTrace);
                 }
+
                 Thread.Sleep(2000);
             }
+            
             AddTestResult(TestContent.IsSuccess && TestContent.IsOrderSent, testName);
         }
 
@@ -221,6 +227,7 @@ namespace Commissions.Tests
                 }
                 catch (Exception ex)
                 {
+                    TestContent.IsSuccess = false;
                     TestContent.OrderStatus = OrderStatus.INDEFINITE;
                     Console.WriteLine(ex.Message);
                 }

@@ -40,7 +40,8 @@ namespace Commissions.Tests
         protected double BestAsk { get; set; }
         protected TestTrader TestTrader { get; set; }
 
-        public string Exchange = "SBITFINEX";
+        protected string Exchange = "SBITFINEX";
+
         public Logger Logger = LogManager.GetCurrentClassLogger();
 
         public void Initialize(string baseSymbol, string termSymbol)
@@ -89,6 +90,13 @@ namespace Commissions.Tests
             TraderSubscriber.OrderBookSubcribe(OrderBookDestination + Symbol, OnBestBidAsk);
         }
 
+        public void UpdateExchange(string newExchange)
+        {
+            Exchange = newExchange;
+            BestBid = 0;
+            BestAsk = 0;
+        }
+
         public void InitializeTrader()
         {
             TestTrader = new TestTrader();
@@ -131,7 +139,10 @@ namespace Commissions.Tests
             if (TestContent.IsOrderSent)
                 SaveSentOrderId(message.Substring(3));
             else if (!TestContent.IsOrderSent)
+            {
+                TestContent.IsSuccess = false;
                 TestContent.OrderStatus = OrderStatus.INDEFINITE;
+            } 
         }
 
         private bool IsSuccessStatus(string status, string message)
